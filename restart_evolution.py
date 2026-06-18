@@ -71,6 +71,12 @@ def reiniciar_servico():
         
     except subprocess.CalledProcessError as e:
         print(f"Erro ao executar comando do docker. Detalhes: {e}")
+        if hasattr(e, 'stderr') and e.stderr:
+            print(f"Saída do erro: {e.stderr}")
+        print("🚨 DICA: Esse erro geralmente significa que o container não tem permissão para acessar o Docker.")
+        print("Vá na aba 'Mounts' do Easypanel no seu Worker e certifique-se de que você adicionou um Bind Mount com:")
+        print("Host Path: /var/run/docker.sock")
+        print("Mount Path: /var/run/docker.sock")
     except FileNotFoundError:
         print("Erro: O comando 'docker' não foi encontrado.")
 
