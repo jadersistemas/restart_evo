@@ -50,12 +50,14 @@ def reiniciar_servico():
         
         container_alvo = None
         for c in containers:
-            if c == NOME_SERVICO or c.endswith(f"_{NOME_SERVICO}"):
+            # Busca mais tolerante: verifica apenas se o nome do serviço faz parte do nome do container
+            if NOME_SERVICO in c:
                 container_alvo = c
                 break
                 
         if not container_alvo:
-            print(f"Erro: Nenhum container encontrado para o serviço '{NOME_SERVICO}'.")
+            print(f"Erro: Nenhum container encontrado contendo '{NOME_SERVICO}' no nome.")
+            print(f"Containers que o script conseguiu enxergar rodando: {', '.join(containers)}")
             return
             
         print(f"Container encontrado: {container_alvo}. Reiniciando...")
