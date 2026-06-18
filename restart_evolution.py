@@ -75,8 +75,12 @@ def reiniciar_servico():
         print("Erro: O comando 'docker' não foi encontrado.")
 
 def main():
-    print("Script de agendamento (Easypanel/Docker) iniciado.")
-    print(f"O serviço '{NOME_SERVICO}' será reiniciado todos os dias nos seguintes horários: {', '.join(HORARIOS_REINICIO)}")
+    agora_teste = datetime.datetime.now().strftime("%H:%M:%S")
+    print("===================================================")
+    print(f"Script de agendamento iniciado!")
+    print(f"⏰ HORA ATUAL NO CONTAINER: {agora_teste}")
+    print(f"🔄 O serviço '{NOME_SERVICO}' será reiniciado nos horários: {', '.join(HORARIOS_REINICIO)}")
+    print("===================================================")
     
     while True:
         agora = datetime.datetime.now().strftime("%H:%M")
