@@ -32,15 +32,28 @@ def enviar_mensagem_whatsapp():
         "text": "✅ *Aviso de Sistema*\n\nO serviço da Evolution API foi reiniciado automaticamente e já estabilizou!"
     }
     
-    try:
-        print(f"Tentando enviar mensagem de aviso para {NUMERO_AVISO} usando a instância {NOME_INSTANCIA}...")
-        req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
-        with urllib.request.urlopen(req) as response:
-            print("Mensagem enviada com sucesso pelo WhatsApp!")
-    except urllib.error.HTTPError as e:
-        print(f"Erro na API ao enviar mensagem (Código {e.code}). Verifique se o nome da instância está correto. Detalhes: {e.read().decode()}")
-    except Exception as e:
-        print(f"Erro ao tentar se conectar com a API: {e}")
+    max_tentativas = 6 # Tenta por até 2 minutos no total
+    for tentativa in range(1, max_tentativas + 1):
+        try:
+            print(f"Tentativa {tentativa}/{max_tentativas} de enviar mensagem usando a instância {NOME_INSTANCIA}...")
+            req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
+            with urllib.request.urlopen(req) as response:
+                print("Mensagem enviada com sucesso pelo WhatsApp!")
+                return # Se deu certo, sai da função
+        except urllib.error.HTTPError as e:
+            erro_msg = e.read().decode()
+            print(f"Erro na API (Código {e.code}). Detalhes: {erro_msg}")
+            
+            # Se não for a última tentativa, espera para tentar de novo
+            if tentativa < max_tentativas:
+                print("⏳ O WhatsApp provavalmente ainda está carregando as mensagens/conectando. Tentando de novo em 20 segundos...")
+                time.sleep(30)
+            else:
+                print("Desistindo de enviar a mensagem de aviso após várias tentativas.")
+        except Exception as e:
+            print(f"Erro ao tentar se conectar com a API: {e}")
+            if tentativa < max_tentativas:
+                time.sleep(30)
 
 def reiniciar_servico():
     print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Buscando o container para o serviço: {NOME_SERVICO}")
